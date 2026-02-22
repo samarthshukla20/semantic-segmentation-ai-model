@@ -1,0 +1,117 @@
+.scroll-scene {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+/* ── Shared layer base ── */
+.scroll-scene__layer {
+    position: absolute;
+    left: 0;
+    width: 180%;
+    will-change: transform;
+}
+
+.scroll-scene__mountains {
+    bottom: 5%;
+    height: 30vh;
+    opacity: 1;
+}
+
+.scroll-scene__dunes-mid {
+    bottom: 3%;
+    height: 22vh;
+    opacity: 0.85;
+}
+
+.scroll-scene__rocks {
+    bottom: 2%;
+    height: 14vh;
+    opacity: 1;
+}
+
+.scroll-scene__cacti {
+    bottom: 2%;
+    height: 16vh;
+    opacity: 0.9;
+}
+
+.scroll-scene__dunes-near {
+    bottom: 0;
+    height: 12vh;
+    opacity: 0.7;
+}
+
+/* ── Vehicle ── */
+.scroll-scene__vehicle {
+    position: absolute;
+    bottom: 6%;
+    z-index: 3;
+    will-change: left, transform;
+    filter:
+        drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5)) drop-shadow(0 4px 12px rgba(0, 0, 0, 0.35)) drop-shadow(0 0 20px rgba(76, 175, 80, 0.3));
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+/* Zone label */
+.scroll-scene__zone-label {
+    position: absolute;
+    top: -22px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.6rem;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--amber);
+    white-space: nowrap;
+    opacity: 0.7;
+    animation: zonePulse 1.5s ease-in-out infinite;
+}
+
+@keyframes zonePulse {
+
+    0%,
+    100% {
+        opacity: 0.5;
+    }
+
+    50% {
+        opacity: 0.9;
+    }
+}
+
+/* ── Ground ── */
+.scroll-scene__ground {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: rgba(180, 150, 110, 0.15);
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+
+    .scroll-scene__mountains,
+    .scroll-scene__cacti {
+        display: none;
+    }
+
+    .scroll-scene__vehicle {
+        opacity: 0.7;
+    }
+
+    .scroll-scene__zone-label {
+        display: none;
+    }
+
+    .scroll-scene__layer {
+        width: 250%;
+    }
+}

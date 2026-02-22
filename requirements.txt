@@ -1,0 +1,8 @@
+streamlit==1.32.0
+torch
+torchvision
+torchaudio
+segmentation-models-pytorch
+opencv-python
+Pillow
+numpy

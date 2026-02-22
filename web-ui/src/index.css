@@ -1,0 +1,109 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
+
+/* ═══════════════════════════════════════════
+   DESIGN TOKENS  —  Light Desert Palette
+   ═══════════════════════════════════════════ */
+
+:root {
+  /* Sand spectrum */
+  --sand-lightest: #FDF8F0;
+  --sand-light: #F5E6CC;
+  --sand: #E8D5B5;
+  --sand-mid: #D4BFA0;
+  --sand-dark: #B8A080;
+
+  /* Accents */
+  --amber: #C8923A;
+  --amber-glow: #D9A54A;
+  --terracotta: #B85C38;
+  --orange: #C4703F;
+  --olive: #5C7A3A;
+  --olive-dark: #3D5A28;
+
+  /* Surfaces */
+  --bg-primary: #FBF3E6;
+  --bg-secondary: #F3E8D4;
+  --bg-card: rgba(255, 255, 255, 0.45);
+  --border: rgba(180, 150, 110, 0.2);
+
+  /* Text */
+  --text-primary: #2A1E12;
+  --text-secondary: #6B5740;
+  --text-muted: #9C8A70;
+
+  /* Layout */
+  --section-padding: 100px 0;
+  --container-width: 1080px;
+  --transition-smooth: 0.3s ease;
+}
+
+/* ═══ Reset ═══ */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: var(--sand-dark) var(--bg-primary);
+}
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--sand-dark);
+  border-radius: 3px;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* ═══ Layout ═══ */
+.container {
+  max-width: var(--container-width);
+  margin: 0 auto;
+  padding: 0 28px;
+}
+
+.section {
+  padding: var(--section-padding);
+  position: relative;
+  z-index: 2;
+}
+
+/* ═══ Responsive ═══ */
+@media (max-width: 768px) {
+  :root {
+    --section-padding: 72px 0;
+  }
+
+  .container {
+    padding: 0 20px;
+  }
+}

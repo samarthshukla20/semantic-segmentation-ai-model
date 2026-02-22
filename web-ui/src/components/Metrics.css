@@ -1,0 +1,175 @@
+.metrics-section {
+    background: rgba(243, 232, 212, 0.88);
+}
+
+.metrics__header {
+    margin-bottom: 48px;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.metrics__header.is-visible {
+    opacity: 1;
+    transform: none;
+}
+
+.metrics__label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+}
+
+.metrics__title {
+    font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.5px;
+    margin-bottom: 8px;
+}
+
+.metrics__desc {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    max-width: 560px;
+}
+
+/* Cards */
+.metrics__cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    margin-bottom: 56px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease 0.2s, transform 0.6s ease 0.2s;
+}
+
+.metrics__cards.is-visible {
+    opacity: 1;
+    transform: none;
+}
+
+.metrics__card {
+    padding: 32px 28px;
+    background: rgba(255, 255, 255, 0.4);
+    border: 1px solid var(--border);
+}
+
+.metrics__card:first-child {
+    border-radius: 12px 0 0 12px;
+}
+
+.metrics__card:last-child {
+    border-radius: 0 12px 12px 0;
+}
+
+.metrics__card-val {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+    font-variant-numeric: tabular-nums;
+}
+
+.metrics__card-key {
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--text-muted);
+}
+
+/* Bars */
+.metrics__bars-section {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.metrics__bars-section.is-visible {
+    opacity: 1;
+    transform: none;
+}
+
+.metrics__bars-heading {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 24px;
+}
+
+.metrics__bars {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.metrics__bar-row {
+    display: grid;
+    grid-template-columns: 150px 1fr 52px;
+    align-items: center;
+    gap: 14px;
+}
+
+.metrics__bar-name {
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.metrics__bar-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    flex-shrink: 0;
+}
+
+.metrics__bar-track {
+    height: 8px;
+    background: rgba(180, 150, 110, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.metrics__bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.metrics__bar-val {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 768px) {
+    .metrics__cards {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .metrics__card {
+        border-radius: 0;
+    }
+
+    .metrics__card:first-child {
+        border-radius: 12px 12px 0 0;
+    }
+
+    .metrics__card:last-child {
+        border-radius: 0 0 12px 12px;
+    }
+
+    .metrics__bar-row {
+        grid-template-columns: 110px 1fr 45px;
+        gap: 8px;
+    }
+}

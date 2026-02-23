@@ -1,11 +1,12 @@
 # 🏜️ Offroad Environment Segmentation AI
 
-> **Semantic segmentation model for autonomous offroad navigation in desert terrain.**
+> **Production-grade semantic segmentation model for autonomous offroad navigation in desert terrain.**
 >
 > Built for the **Startathon Desert Hackathon** — classifies every pixel of a terrain image into one of 10 environmental categories to enable safe autonomous offroading.
 
 ![Python](https://img.shields.io/badge/Python-3.8%2B-blue)
 ![PyTorch](https://img.shields.io/badge/PyTorch-2.x-ee4c2c)
+![React](https://img.shields.io/badge/React-18.x-61dafb)
 ![Streamlit](https://img.shields.io/badge/Streamlit-1.32-ff4b4b)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
@@ -24,14 +25,13 @@
 | Component | Details |
 |-----------|---------|
 | **Architecture** | U-Net |
-| **Encoder** | ResNet-34 (ImageNet pretrained) |
+| **Encoder** | EfficientNet-B4 (ImageNet pretrained) |
 | **Framework** | [segmentation-models-pytorch](https://github.com/qubvel/segmentation_models.pytorch) |
 | **Input Resolution** | 512 × 512 |
 | **Output Classes** | 10 |
-| **Loss Function** | CrossEntropy + Dice (hybrid) |
-| **Optimizer** | Adam (LR: 1e-5 for fine-tuning) |
-| **LR Scheduler** | Cosine Annealing |
-| **Augmentation** | Horizontal flip, Vertical flip |
+| **Loss Function** | CrossEntropy + Dice (Hybrid Wrapper) |
+| **Optimizer** | AdamW (Initial LR: 5e-4, Fine-tune LR: 1e-4) |
+| **Augmentation** | Albumentations (Affine, H-Flip, RandomBrightnessContrast) |
 
 ---
 
@@ -50,55 +50,55 @@
 | 8 | 7100 | Landscape | 🟧 `#F4A460` |
 | 9 | 10000 | Sky | 🔵 `#87CEEB` |
 
- ![terrain_class](https://github.com/user-attachments/assets/a16bf38d-9c4c-40ab-9fa2-a75f9ca3e774) 
+![terrain_class](https://github.com/user-attachments/assets/a16bf38d-9c4c-40ab-9fa2-a75f9ca3e774) 
 
 ---
 
 ## 📊 Performance
 
-### Overall Metrics
+### Overall Metrics (Validation Set)
 
 | Metric | Score |
 |--------|------:|
-| **Pixel Accuracy** | 88.26% |
-| **Mean IoU** | 67.60% |
-| **mAP50 Value** | 48.89% |
+| **Pixel Accuracy** | ~89.15% |
+| **Mean IoU** | ~70% |
 
-**🎯 Metric Selection**: Why mIoU over mAP50?
-While mAP50 is a standard metric for Object Detection (bounding boxes), we architected a Semantic Segmentation (U-Net) model to achieve pixel-perfect terrain mapping. For autonomous offroad navigation, knowing the exact irregular shape of a winding dirt path or a jagged rock is much more valuable than a generalized bounding box. Therefore, we evaluated our model using Mean IoU (67.60%), which is the gold standard for measuring pixel-level environmental perception.
+**🎯 Metric Selection**: Why Mean IoU and F1-Score instead of mAP50?
+While mAP50 is a standard metric for *Object Detection* (counting individual bounding boxes), we architected a *Semantic Segmentation* (U-Net) model to achieve pixel-perfect terrain mapping. Semantic models classify materials, not distinct instances. For autonomous offroad navigation, knowing the exact irregular shape of a winding dirt path or a jagged rock is much more valuable than a generalized bounding box. 
 
 ### Per-Class IoU (Intersection over Union)
 
-![per-class-iou](https://github.com/user-attachments/assets/8864229b-ee85-4143-9c2c-1bca986947a2)
+The Production Model achieved massive improvements in highly irregular micro-terrains (Rocks & Ground Clutter) compared to our baseline.
 
-> **Note:** Small / rare objects (Logs, Rocks, Ground Clutter) are harder to detect. The hybrid CrossEntropy + Dice loss was specifically added to improve these classes.
-
-### Confusion Matrix
-
-![WhatsApp Image 2026-02-19 at 1 22 44 AM](https://github.com/user-attachments/assets/752d70ad-d946-4cad-8ee9-d01286103e15)
+* **Sky**: 98.77%
+* **Trees**: 88.59%
+* **Lush Bushes**: 73.16%
+* **Landscape**: 72.69%
+* **Dry Grass**: 71.88%
+* **Flowers**: 71.31%
+* **Logs**: 65.82% 
+* **Rocks**: 57.49% *(+10% improvement over Baseline)*
+* **Dry Bushes**: 53.33%
+* **Ground Clutter**: 45.78% *(+4% improvement over Baseline)*
 
 ---
 
 ## 🏋️ Training Evolution
 
-The model was iteratively improved across **4 training versions**:
+The model was iteratively improved, ultimately transitioning to Cloud GPU infrastructure to support heavier architectures and aggressive fine-tuning:
 
-| Version | File | Resolution | Batch | Loss | Augmentation | Key Improvement |
-|:-------:|------|:----------:|:-----:|------|:------------:|-----------------|
-| V0 | `run_training.py` | 256 | 8 | CE | ❌ | Baseline |
-| V1 | `local_train.py` | 256 | 6 | CE | ❌ | Local GPU tuning |
-| V2 | `local_train_v2.py` | 256 | 6 | CE | ❌ | **Fixed mask ID mapping** (100→0, 200→1, …) |
-| V3 | `local_train_v3.py` | 256 | 6 | CE + Dice | ✅ Flip H/V | Augmentation, hybrid loss, cosine LR |
-| V4 | `local_train_final.py` | 512 | 2 | CE + Dice | ✅ Flip H/V | High-res fine-tuning (LR=1e-5) |
-| V5 | `train.py` | 512 | 2 | CE + Dice | ✅ Flip H/V | Improved Performance |
+| Phase | Backbone | Resolution | Loss | Augmentation | Key Concept |
+|:-------:|------|:----------:|------|:------------:|-----------------|
+| **Baseline** | ResNet-34 | 256x256 | CE | ❌ | Local GPU prototyping |
+| **V1** | ResNet-34 | 512x512 | CE | ❌ | Fixed raw ID mask mapping |
+| **V2** | ResNet-34 | 512x512 | CE + Dice | Basic Flips | Introduced Hybrid Loss |
+| **Production** | **EfficientNet-B4** | 512x512 | CE + Dice | **Albumentations** | 16GB Cloud GPU training |
+| **Fine-Tuning** | EfficientNet-B4 | 512x512 | CE + Dice | Albumentations | **Learning Rate Decay (1e-4)** |
 
-### What Changed at Each Step
-
-- **V0 → V1**: Adjusted batch size to fit RTX 4050's 6 GB VRAM
-- **V1 → V2**: 🐛 **Critical bug fix** — masks were being read as grayscale (`cv2.imread(path, 0)`), truncating raw IDs (100, 200, …, 10000). Changed to `cv2.imread(path, -1)` and added `ID_MAPPING` to remap to 0–9
-- **V2 → V3**: Added horizontal/vertical flip augmentation, switched to hybrid CrossEntropy + Dice loss (massive IoU improvement for small classes like Logs), added cosine annealing LR scheduler
-- **V3 → V4**: Bumped resolution to 512×512, lowered batch to 2, fine-tuned with LR=1e-5 from V3 weights
-- **V4 → V5**: Trained model deeply with more precision resulting in an improved and increased IoU value.
+### The "Production AI" Upgrades
+- **EfficientNet-B4 Upgrade:** Swapped the legacy ResNet encoder for EfficientNet to significantly improve the AI's ability to understand chaotic, unstructured ground textures.
+- **Heavy Augmentation:** Implemented `Albumentations` (Affine transforms, rotations, scale, and brightness adjustments) to force the AI to learn the geometric shapes of rocks and logs rather than just memorizing dataset lighting.
+- **Learning Rate Decay (Fine-Tuning):** After converging at a learning rate of `5e-4` for 15 epochs, the model was fine-tuned for an additional 25 epochs at `1e-4` to mathematically shave down the borders of minority classes without overfitting.
 
 ---
 
@@ -107,50 +107,32 @@ The model was iteratively improved across **4 training versions**:
 ```
 desert_hackathon/
 ├── app.py                      # Streamlit web app for live inference
-├── best_model.pth              # Trained model weights (~93 MB)
+├── best_efficientnet_model.pth # Production model weights (~130 MB)
 ├── requirements.txt            # Python dependencies
-├── generate_readme_assets.py   # (Optional) Generate extra charts on a GPU machine
 │
-├── run_training.py             # V0 — Baseline training
-├── local_train.py              # V1 — Local GPU training
-├── local_train_v2.py           # V2 — Fixed mask ID mapping
-├── local_train_v3.py           # V3 — Augmentation + hybrid loss + scheduler
-├── local_train_final.py        # V4 — 512×512 high-res fine-tuning
-├── train.py                    # V5 — More precised training
+├── web-ui/                     # React Frontend Application
+│   ├── api_server.py           # Flask/FastAPI backend serving the PyTorch model
+│   ├── src/                    # React components and assets
+│   └── package.json            
 │
-├── check_model.py              # Quick single-image visual check
-├── accurate_check.py           # Corrected mask reading validation
-├── check_iou.py                # Full validation set IoU computation
-├── check_split.py              # Train/val split ratio verification
-├── final_test.py               # Final eval: IoU + confusion matrix + visuals
-│
-├── final_submission_results/   # Pre-generated evaluation outputs
-│   ├── confusion_matrix.png
-│   └── result_0..4.png
-│
-└── Offroad_Segmentation_Training_Dataset/  # Dataset (gitignored)
-    ├── train/
-    │   ├── Color_Images/
-    │   └── Segmentation/
-    └── val/
-        ├── Color_Images/
-        └── Segmentation/
+├── Offroad_Segmentation_Training_Dataset/  # Dataset (gitignored)
 ```
 
 ---
 
-## 🚀 Getting Started
+### 🚀 Getting Started
 
 ### Prerequisites
 
 - Python 3.8+
+- Node.js (For frontend)
 - NVIDIA GPU with CUDA support (tested on RTX 4050 — 6 GB VRAM)
 
 ### 1)- Installation
 
 ```bash
-git clone https://github.com/bajpaidhruv2018/desert_hackathon.git
-cd desert_hackathon
+git clone https://github.com/samarthshukla20/semantic-segmentation-ai-model.git
+cd semantic-segmentation-ai-model
 pip install -r requirements.txt
 ```
 
@@ -161,38 +143,6 @@ cd web-ui
 npm install
 cd ..
 ```
-
-### Dataset Setup
-
-1. Download the **Offroad Segmentation Training Dataset** (provided by hackathon organizers).
-2. Place it in the project root:
-   ```
-   desert_hackathon/
-   └── Offroad_Segmentation_Training_Dataset/
-       ├── train/
-       │   ├── Color_Images/
-       │   └── Segmentation/
-       └── val/
-           ├── Color_Images/
-           └── Segmentation/
-   ```
-
----
-
-## 🏋️ Reproducing Training
-
-```bash
-# Step 1 — Baseline with corrected mask mapping
-python local_train_v2.py
-
-# Step 2 — Improve with augmentation + hybrid loss (resumes from V2)
-python local_train_v3.py
-
-# Step 3 — Fine-tune at 512×512 (resumes from V3)
-python local_train_final.py
-```
-
----
 
 ## 🧪 Evaluation
 
@@ -253,17 +203,17 @@ streamlit run app.py
 
 ## 🔑 Key Technical Decisions
 
-### 1. Raw Mask Reading
-Segmentation masks encode class IDs as raw pixel values (100, 200, …, 10000). Reading as `cv2.imread(path, 0)` (grayscale) truncates values above 255, causing incorrect labels. Using `cv2.imread(path, -1)` reads unchanged values and preserves the original IDs.
+### 1. Hybrid CrossEntropy + Dice Loss
+Standard Cross-Entropy loss evaluates pixels individually, causing the AI to perform exceptionally well on massive objects (Sky: 98%) but fail completely on small hazards. By wrapping nn.CrossEntropyLoss with smp.losses.DiceLoss, the AI is mathematically penalized for missing the entire shape of thin logs or small rocks, forcing it to respect precise object boundaries.
 
-### 2. Hybrid CE + Dice Loss
-CrossEntropy alone struggles with underrepresented classes (Logs, Rocks, Ground Clutter). Dice loss focuses on per-class overlap and significantly boosted IoU for these minority classes.
+### 2. ImageNet Pixel Normalization
+During the transition to EfficientNet, the input tensors in the deployment server (api_server.py and app.py) were explicitly normalized using the ImageNet mean [0.485, 0.456, 0.406] and standard deviation [0.229, 0.224, 0.225]. Skipping this step in production leads to catastrophic feature misalignment and garbage inference outputs.
 
 ### 3. Progressive Training
 Instead of training at 512×512 from scratch (GPU memory-prohibitive at batch sizes needed), we first converge at 256×256 and then fine-tune at 512×512 with a very low learning rate. Faster convergence, lower memory usage.
 
-### 4. Default Class Fallback
-Unknown / unmapped pixel values in masks are assigned to class 8 (Landscape) as a safe default to prevent training crashes from out-of-range class indices.
+### 4. Avoiding mAP50 for Semantic Validation
+As U-Net handles Semantic Segmentation rather than Instance Segmentation, the model classifies amorphous material blobs rather than discrete, countable objects. Calculating mAP50 requires artificial bounding-box generation via OpenCV, which artificially punishes the score if an object (like a log) is partially buried and split into two visual pieces. Validation relies strictly on pixel-wise Mean IoU and Dice (F1) scores.
 
 ---
 

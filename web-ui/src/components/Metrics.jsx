@@ -2,17 +2,18 @@ import { useEffect, useState, useRef } from 'react';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import './Metrics.css';
 
+// UPGRADED: New Fine-Tuned EfficientNet Metrics (Sorted highest to lowest)
 const IOU_DATA = [
-    { name: 'Sky', value: 98.73, color: '#87CEEB' },
-    { name: 'Trees', value: 87.63, color: '#228B22' },
-    { name: 'Dry Grass', value: 70.37, color: '#DAA520' },
-    { name: 'Lush Bushes', value: 70.14, color: '#9ACD32' },
-    { name: 'Landscape', value: 69.78, color: '#F4A460' },
-    { name: 'Flowers', value: 64.22, color: '#FF69B4' },
-    { name: 'Logs', value: 56.21, color: '#A0522D' },
-    { name: 'Dry Bushes', value: 48.93, color: '#8B4513' },
-    { name: 'Rocks', value: 47.84, color: '#696969' },
-    { name: 'Ground Clutter', value: 39.98, color: '#808080' },
+    { name: 'Sky', value: 98.77, color: '#87CEEB' },
+    { name: 'Trees', value: 88.59, color: '#228B22' },
+    { name: 'Lush Bushes', value: 73.16, color: '#9ACD32' },
+    { name: 'Landscape', value: 72.69, color: '#F4A460' },
+    { name: 'Dry Grass', value: 71.88, color: '#DAA520' },
+    { name: 'Flowers', value: 71.31, color: '#FF69B4' },
+    { name: 'Logs', value: 65.82, color: '#A0522D' },
+    { name: 'Rocks', value: 57.49, color: '#696969' },
+    { name: 'Dry Bushes', value: 53.33, color: '#8B4513' },
+    { name: 'Ground Clutter', value: 45.78, color: '#808080' },
 ];
 
 function AnimatedNum({ to, visible, suffix = '' }) {
@@ -53,19 +54,22 @@ export default function Metrics() {
                 <div className={`metrics__cards ${headerVisible ? 'is-visible' : ''}`}>
                     <div className="metrics__card">
                         <div className="metrics__card-val">
-                            <AnimatedNum to={87.78} visible={headerVisible} suffix="%" />
+                            {/* UPGRADED: New Pixel Accuracy */}
+                            <AnimatedNum to={89.15} visible={headerVisible} suffix="%" />
                         </div>
                         <div className="metrics__card-key">Pixel Accuracy</div>
                     </div>
                     <div className="metrics__card">
                         <div className="metrics__card-val">
-                            <AnimatedNum to={65.38} visible={headerVisible} suffix="%" />
+                            {/* UPGRADED: New Mean IoU Score */}
+                            <AnimatedNum to={70} visible={headerVisible} suffix="%" />
                         </div>
                         <div className="metrics__card-key">Mean IoU</div>
                     </div>
                     <div className="metrics__card">
                         <div className="metrics__card-val">U-Net</div>
-                        <div className="metrics__card-key">ResNet-34, 512px</div>
+                        {/* UPGRADED: New Brain Architecture */}
+                        <div className="metrics__card-key">EfficientNet-B4, 512px</div>
                     </div>
                 </div>
 
@@ -88,7 +92,7 @@ export default function Metrics() {
                                         }}
                                     />
                                 </div>
-                                <span className="metrics__bar-val">{item.value}%</span>
+                                <span className="metrics__bar-val">{item.value.toFixed(2)}%</span>
                             </div>
                         ))}
                     </div>

@@ -7,7 +7,7 @@ export default function Footer() {
                 <div className="footer__left">
                     <span className="footer__brand">desertnav</span>
                     <span className="footer__sep">·</span>
-                    <span className="footer__meta">Startathon 2025</span>
+                    <span className="footer__meta">Startathon 2026</span>
                 </div>
                 <div className="footer__right">
                     <span className="footer__names">Dhruv Bajpai, Samarth Shukla, Kshitij Trivedi</span>

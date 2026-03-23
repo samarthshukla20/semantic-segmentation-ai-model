@@ -20,7 +20,7 @@ from PIL import Image
 #  CONFIG
 # ═══════════════════════════════════════════════════
 DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
-MODEL_PATH = os.path.join(os.path.dirname(__file__), '..', 'best_model.pth')
+MODEL_PATH = os.path.join(os.path.dirname(__file__), '..', 'best_efficientnet_model.pth')
 
 CLASSES = [
     'Trees', 'Lush Bushes', 'Dry Grass', 'Dry Bushes', 'Ground Clutter',
@@ -46,10 +46,9 @@ COLORS = np.array([
 print(f"🏜️  DesertNav API starting on {DEVICE}...")
 print(f"📦  Loading model from: {os.path.abspath(MODEL_PATH)}")
 
-model = smp.Unet(encoder_name='resnet34', encoder_weights=None, classes=len(CLASSES))
-
+model = smp.Unet(encoder_name='efficientnet-b4', encoder_weights=None, classes=len(CLASSES))
 if not os.path.exists(MODEL_PATH):
-    print("⚠️  best_model.pth not found! Copy it to the project root.")
+    print("⚠️  best_efficientnet_model.pth not found! Copy it to the project root.")
     sys.exit(1)
 
 model.load_state_dict(torch.load(MODEL_PATH, map_location=DEVICE))
@@ -69,7 +68,7 @@ def health():
     return jsonify({
         'status': 'ok',
         'device': DEVICE,
-        'model': 'U-Net (ResNet-34)',
+        'model': 'U-Net (EfficientNet-B4)', # Updated this!
         'classes': len(CLASSES),
     })
 
@@ -90,8 +89,15 @@ def predict():
         img_np = np.array(img_pil)
 
         # ── Preprocess ──
-        input_img = cv2.resize(img_np, (256, 256))
+        # 1. Resize to the new 512x512 training resolution (was 256)
+        input_img = cv2.resize(img_np, (512, 512))
         input_tensor = input_img.astype('float32') / 255.0
+        
+        # 2. CRITICAL: Apply ImageNet Normalization! 
+        mean = np.array([0.485, 0.456, 0.406], dtype=np.float32)
+        std = np.array([0.229, 0.224, 0.225], dtype=np.float32)
+        input_tensor = (input_tensor - mean) / std
+
         input_tensor = input_tensor.transpose(2, 0, 1)  # HWC → CHW
         input_tensor = torch.from_numpy(input_tensor).unsqueeze(0).float().to(DEVICE)
 

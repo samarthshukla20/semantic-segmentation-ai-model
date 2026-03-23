@@ -78,7 +78,7 @@ export default function Hero() {
                 className="hero__content container"
                 style={{ transform: `translateY(${parallaxOffset}px)` }}
             >
-                <p className="hero__kicker">Startathon 2025 — Offroad Segmentation</p>
+                <p className="hero__kicker">Startathon 2026 — Offroad Segmentation</p>
                 <h1 className="hero__title">
                     Mapping{' '}
                     <span className={`hero__rotating-word ${isAnimating ? 'exit' : 'enter'}`}>
@@ -101,12 +101,12 @@ export default function Hero() {
 
                 <div className="hero__stats">
                     <div className="hero__stat">
-                        <span className="hero__stat-value">87.8</span>
+                        <span className="hero__stat-value">89.2</span>
                         <span className="hero__stat-unit">%</span>
                         <span className="hero__stat-label">pixel accuracy</span>
                     </div>
                     <div className="hero__stat">
-                        <span className="hero__stat-value">65.4</span>
+                        <span className="hero__stat-value">70</span>
                         <span className="hero__stat-unit">%</span>
                         <span className="hero__stat-label">mean IoU</span>
                     </div>

@@ -19,7 +19,8 @@ const STEPS = [
     {
         num: '02',
         title: 'Segment',
-        desc: 'A U-Net with ResNet-34 backbone processes every pixel at 512×512.',
+        // UPGRADED: Changed ResNet-34 to EfficientNet-B4
+        desc: 'A U-Net with EfficientNet-B4 backbone processes every pixel at 512×512.',
         detail: 'Hybrid CE + Dice loss',
         icon: (
             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">

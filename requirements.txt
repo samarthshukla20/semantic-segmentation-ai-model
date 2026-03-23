@@ -1,8 +1,16 @@
+# --- Web Server ---
+flask
+flask-cors
+gunicorn
 streamlit==1.32.0
+
+# --- AI Core (CPU Only for Render) ---
+--extra-index-url https://download.pytorch.org/whl/cpu
 torch
 torchvision
-torchaudio
 segmentation-models-pytorch
-opencv-python
+
+# --- Image Processing ---
+opencv-python-headless
 Pillow
 numpy

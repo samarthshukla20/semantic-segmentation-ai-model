@@ -2,7 +2,8 @@ import { useState, useRef, useCallback } from 'react';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import './Upload.css';
 
-const API_URL = 'http://localhost:5050/predict';
+const API_URL = 'https://semantic-segmentation-ai-model.onrender.com/predict';
+// http://localhost:5050/predict
 
 export default function Upload() {
     const [headerRef, headerVisible] = useScrollReveal(0.2);

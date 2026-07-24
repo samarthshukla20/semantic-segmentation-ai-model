@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ProTyper: Ghost Typing Reveal</title>
+<style>
+    body, html {
+        margin: 0; padding: 0; width: 100%; height: 100%;
+        background-color: #0A192F;
+        display: flex; justify-content: center; align-items: center;
+        overflow: hidden;
+    }
+
+    #dimOverlay {
+        position: absolute; width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.7); z-index: 10;
+        transition: opacity 0.3s ease;
+    }
+
+    /* The Typing Terminal Area */
+    #terminal {
+        position: relative; z-index: 20;
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 60px; font-weight: bold;
+        text-align: center;
+        display: flex; flex-direction: column; gap: 10px;
+    }
+
+    /* Individual letters */
+    .char {
+        color: #1E3A5F; /* Ghost text color (untouched) */
+        transition: color 0.05s ease, text-shadow 0.05s ease;
+    }
+
+    .char.lit {
+        color: #FFFFFF; /* Typed text color */
+        text-shadow: 0px 0px 15px rgba(255,255,255,0.6);
+    }
+
+    .char.go-lit {
+        color: #39FF14; /* Neon Green for GO! */
+        text-shadow: 0px 0px 25px rgba(57, 255, 20, 0.8);
+        transform: scale(1.1);
+        display: inline-block;
+    }
+
+    /* The blinking cursor block */
+    #cursor {
+        display: inline-block;
+        width: 30px; height: 60px;
+        background-color: #FFFFFF;
+        vertical-align: bottom;
+        margin-left: 5px;
+        animation: blink 0.5s infinite alternate;
+        opacity: 0; /* Hidden initially */
+    }
+
+    @keyframes blink {
+        0% { opacity: 1; }
+        100% { opacity: 0; }
+    }
+
+    #replayBtn {
+        position: absolute; bottom: 40px; padding: 15px 30px; font-size: 18px;
+        z-index: 30; cursor: pointer; background: #39FF14; color: #000;
+        border: none; border-radius: 8px; font-weight: bold; display: none;
+    }
+</style>
+</head>
+<body>
+
+<div id="dimOverlay"></div>
+
+<div id="terminal">
+    <div id="line1"></div>
+</div>
+
+<button id="replayBtn" onclick="startSequence()">Replay Animation</button>
+
+<script>
+    const overlay = document.getElementById('dimOverlay');
+    const btn = document.getElementById('replayBtn');
+    const line1 = document.getElementById('line1');
+
+    // The sequence we want to type out
+    const words = [
+        { text: "THREE", typeSpeed: 60, waitAfter: 600 },
+        { text: "TWO", typeSpeed: 80, waitAfter: 600 },
+        { text: "ONE", typeSpeed: 100, waitAfter: 600 },
+        { text: "GO!!!", typeSpeed: 40, waitAfter: 1000 }
+    ];
+
+    function startSequence() {
+        btn.style.display = 'none';
+        overlay.style.opacity = '1';
+        overlay.style.display = 'block';
+        
+        // Build the ghost text HTML
+        line1.innerHTML = '';
+        let fullHTML = '';
+        words.forEach(w => {
+            for(let char of w.text) {
+                fullHTML += `<span class="char">${char}</span>`;
+            }
+            fullHTML += `<span>&nbsp;&nbsp;</span>`; // spaces between words
+        });
+        fullHTML += `<span id="cursor"></span>`;
+        line1.innerHTML = fullHTML;
+
+        const charElements = document.querySelectorAll('.char');
+        const cursor = document.getElementById('cursor');
+        cursor.style.opacity = '1';
+
+        let globalCharIndex = 0;
+
+        function processWord(wordIndex) {
+            if (wordIndex >= words.length) {
+                // Finished GO! End sequence
+                setTimeout(() => {
+                    overlay.style.opacity = '0';
+                    line1.style.opacity = '0';
+                    setTimeout(() => {
+                        overlay.style.display = 'none';
+                        btn.style.display = 'block';
+                        line1.style.opacity = '1';
+                    }, 300);
+                }, 500);
+                return;
+            }
+
+            let wordObj = words[wordIndex];
+            let charsTypedInThisWord = 0;
+            let isGoWord = (wordObj.text.includes("GO"));
+
+            // Type the current word character by character
+            function typeChar() {
+                if (charsTypedInThisWord < wordObj.text.length) {
+                    let el = charElements[globalCharIndex];
+                    el.classList.add(isGoWord ? 'go-lit' : 'lit');
+                    
+                    if (isGoWord) cursor.style.backgroundColor = '#39FF14';
+
+                    globalCharIndex++;
+                    charsTypedInThisWord++;
+                    setTimeout(typeChar, wordObj.typeSpeed);
+                } else {
+                    // Word finished, wait for the next one
+                    setTimeout(() => {
+                        processWord(wordIndex + 1);
+                    }, wordObj.waitAfter);
+                }
+            }
+
+            typeChar();
+        }
+
+        // Start typing after a short delay
+        setTimeout(() => processWord(0), 500);
+    }
+
+    window.onload = startSequence;
+</script>
+</body>
+</html>

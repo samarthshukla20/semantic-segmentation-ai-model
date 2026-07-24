@@ -217,16 +217,6 @@ As U-Net handles Semantic Segmentation rather than Instance Segmentation, the mo
 
 ---
 
-## 👥 Team
-
-| Name | Role |
-|------|------|
-| `Dhruv Bajpai` | `Team Lead` |
-| `Samarth Shukla` | `Backend` |
-| `Kshitij Trivedi` | `Frontend` |
-
----
-
 ## 📄 License
 
 This project was developed for the **Startathon Desert Hackathon**. Please check with the organizers for dataset licensing and usage terms.

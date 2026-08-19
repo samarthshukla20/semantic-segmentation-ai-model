@@ -6,6 +6,9 @@ import segmentation_models_pytorch as smp
 from PIL import Image
 import os
 
+# MUST BE THE FIRST STREAMLIT COMMAND
+st.set_page_config(page_title="Offroad AI", layout="wide")
+
 # --- CONFIGURATION & COLORS ---
 DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 
@@ -36,7 +39,7 @@ def load_model():
         st.error("⚠️ best_efficientnet_model.pth not found! Please ensure it is in the same folder as this script.")
         return None
         
-    model.load_state_dict(torch.load("best_efficientnet_model.pth", map_location=DEVICE))
+    model.load_state_dict(torch.load("best_efficientnet_model.pth", map_location=DEVICE, weights_only=True))
     model.to(DEVICE)
     model.eval()
     return model
@@ -44,7 +47,6 @@ def load_model():
 model = load_model()
 
 # --- APP UI ---
-st.set_page_config(page_title="Offroad AI", layout="wide")
 st.title("🏜️ Offroad Environment Segmentation AI")
 st.markdown("Upload a terrain image to let the AI map the environment for autonomous offroading.")
 
@@ -54,8 +56,11 @@ uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "png", "jpeg
 if uploaded_file is not None and model is not None:
     # 1. Read Image
     image = Image.open(uploaded_file).convert('RGB')
-    image_np = np.array(image)
+    image_np = np.array(image, dtype=np.uint8)
+    
+    # Resize and explicitly ensure it is a uint8 NumPy array for Streamlit
     vis_image = cv2.resize(image_np, (512, 512))
+    vis_image = np.array(vis_image, dtype=np.uint8)
 
     # 2. Preprocess for AI
     # UPGRADED: Resizing to our new 512x512 training resolution
@@ -84,15 +89,18 @@ if uploaded_file is not None and model is not None:
     # 4. Colorize the Prediction
     pred_mask_resized = cv2.resize(pred_mask, (512, 512), interpolation=cv2.INTER_NEAREST)
     color_mask = COLORS[pred_mask_resized]
+    
+    # Explicitly ensure the mask is a uint8 NumPy array for Streamlit
+    color_mask = np.array(color_mask, dtype=np.uint8)
 
     # 5. Display Side-by-Side Images
     col1, col2 = st.columns(2)
     with col1:
         st.header("Original Image")
-        st.image(vis_image, use_container_width=True)
+        st.image(vis_image, use_column_width=True)
     with col2:
         st.header("AI Perception")
-        st.image(color_mask, use_container_width=True)
+        st.image(color_mask, use_column_width=True)
 
     # 6. Display Metrics Dashboard
     st.divider()

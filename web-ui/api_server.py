@@ -51,7 +51,7 @@ if not os.path.exists(MODEL_PATH):
     print("⚠️  best_efficientnet_model.pth not found! Copy it to the project root.")
     sys.exit(1)
 
-model.load_state_dict(torch.load(MODEL_PATH, map_location=DEVICE))
+model.load_state_dict(torch.load(MODEL_PATH, map_location=DEVICE, weights_only=True))
 model.to(DEVICE)
 model.eval()
 print("✅  Model loaded successfully!")

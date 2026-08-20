@@ -78,7 +78,7 @@ export default function Hero() {
                 className="hero__content container"
                 style={{ transform: `translateY(${parallaxOffset}px)` }}
             >
-                <p className="hero__kicker">Startathon 2026 — Offroad Segmentation</p>
+                <p className="hero__kicker"></p>
                 <h1 className="hero__title">
                     Mapping{' '}
                     <span className={`hero__rotating-word ${isAnimating ? 'exit' : 'enter'}`}>
